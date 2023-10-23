@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Quicksand:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="to-do-app">
+            <h2>To-do App</h2>
+            <br>
+            <input type="text" id="Task" placeholder="Enter Task...">
+            <br>
+            <br>
+            <button onclick="add()"><i class="fas fa-plus"></i> Add Task</button>
+            <button onclick="edit()"><i class="fas fa-edit"></i> Edit Task</button>
+            <button onclick="remove()"><i class="fas fa-trash-alt"></i> Delete Task</button>
+        </div>
+        <ul class="to-do-list" id="taskList"></ul>
+    </div>
+    <script>
+        const ul = document.getElementById('taskList');
+        const input = document.getElementById('Task');
+        let TaskArray = localStorage.getItem('Task') ? JSON.parse(localStorage.getItem('Task')) : [];
+
+        TaskArray.forEach(addTask);
+
+        function addTask(text) {
+            const li = document.createElement('li');
+            li.textContent = text;
+            ul.appendChild(li);
+        }
+
+        function add() {
+            TaskArray.push(input.value);
+            localStorage.setItem('Task', JSON.stringify(TaskArray));
+            addTask(input.value);
+            input.value = '';
+        }
+
+        function edit() {
+            const selectedTask = ul.querySelector('.selected');
+            if (selectedTask) {
+                const newText = input.value;
+                const index = Array.from(ul.children).indexOf(selectedTask);
+                TaskArray[index] = newText;
+                selectedTask.textContent = newText;
+                localStorage.setItem('Task', JSON.stringify(TaskArray));
+                input.value = '';
+                selectedTask.classList.remove('selected');
+            }
+        }
+
+        function remove() {
+            const selectedTask = ul.querySelector('.selected');
+            if (selectedTask) {
+                const index = Array.from(ul.children).indexOf(selectedTask);
+                TaskArray.splice(index, 1);
+                localStorage.setItem('Task', JSON.stringify(TaskArray));
+                ul.removeChild(selectedTask);
+                input.value = '';
+            }
+        }
+
+        ul.addEventListener('click', function (e) {
+            if (e.target.tagName === 'LI') {
+                if (ul.querySelector('.selected')) {
+                    ul.querySelector('.selected').classList.remove('selected');
+                }
+                e.target.classList.add('selected');
+                input.value = e.target.textContent;
+            }
+        });
+    </script>
+</body>
+</html>
